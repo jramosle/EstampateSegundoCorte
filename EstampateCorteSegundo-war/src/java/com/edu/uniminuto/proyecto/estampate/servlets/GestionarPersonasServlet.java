@@ -4,8 +4,12 @@ import com.unimininuto.estampate.ejb.interfaces.UsuariosFacadeLocal;
 import com.unimininuto.estampate.entities.Usuarios;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -26,7 +30,7 @@ public class GestionarPersonasServlet extends HttpServlet {
 
     List<Usuarios> usuarios = new ArrayList<>();
     List<Usuarios> usuariosCon = new ArrayList<>();
-//    UsuariosDAO usuariosDAO = new UsuariosDAO();
+
     String id = "";
     String accion = "";
 
@@ -55,77 +59,96 @@ public class GestionarPersonasServlet extends HttpServlet {
                     + "    <body>\n"
                     + "     <div id=\"caja\">");
 
-//            if ("consultar".equals(accion)) {
-            out.println("<form action='taller' method=\"post\">\n"
-                    + "<table>\n"
-                    + "  <tr>\n"
-                    + "    <th></th>\n"       
-                    + "    <th>nombre</th>\n"
-                    + "    <th>fecha de nacimiento</th>\n"
-                    + "    <th>correo usuario</th>\n"
-                    + "    <th>Cedula usuario</th>\n"
-                    + "  </tr>\n");
-            usuarios.forEach((usuarios) -> {
-                out.print("  <tr>\n"
-                        + "    <td><input type=\"radio\" name=\"selected\" value="+usuarios.getIdusuario()+"></td>\n"
-                        + "    <td>" + usuarios.getNombreusuario() + "</td>\n"
-                        + "    <td>" + usuarios.getFechanacimiento() + "</td>\n"
-                        + "    <td>" + usuarios.getCorreousuario() + "</td>\n"
-                        + "    <td>" + usuarios.getCedulausuario() + "</td>\n"
+            if ("consultar".equals(accion)) {
+                out.println("<form action=\"GestionarPersonasServlet\" method=\"post\">\n"
+                        + "<table>\n"
+                        + "  <tr>\n"
+                        + "    <th></th>\n"
+                        + "    <th>nombre</th>\n"
+                        + "    <th>fecha de nacimiento</th>\n"
+                        + "    <th>correo usuario</th>\n"
+                        + "    <th>Cedula usuario</th>\n"
                         + "  </tr>\n");
-            });
-            out.print("</table>"
-                    + "</form> \n");
+                usuarios.forEach((usuarios) -> {
+                    out.print("  <tr>\n"
+                            + "    <td><input type=\"radio\" name=\"selected\" value=" + usuarios.getIdusuario() + "></td>\n"
+                            + "    <td>" + usuarios.getNombreusuario() + "</td>\n"
+                            + "    <td>" + usuarios.getFechanacimiento() + "</td>\n"
+                            + "    <td>" + usuarios.getCorreousuario() + "</td>\n"
+                            + "    <td>" + usuarios.getCedulausuario() + "</td>\n"
+                            + "  </tr>\n");
+                });
+                out.print("</table>"
+                        + "<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"eliminar\">"
+                        + "<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"editar\">"
+                        + "</form> \n");
+            } else if ("insertar".equals(accion)) {
 
-//            } else {
-//
-//                out.println("   <h2>Administracion usuarios</h2>\n"
-//                        + "\n"
-//                        + "        <form action='taller' method=\"post\">"
-//                        + "            Primer nombre:<br>\n"
-//                        + "            <input type=\"text\" name=\"nombreUsuario\" value=\"\" placeholder=\"nombre\" required>\n"
-//                        + "            <br>\n"
-//                        + "            Fecha de nacimiento:<br>\n"
-//                        + "            <input type=\"date\" name=\"fechaNacimiento\" value=\"\" required>\n"
-//                        + "            <br>\n"
-//                        + "            Cedula: \n"
-//                        + "            <br>\n"
-//                        + "            <input type=\"text\" name=\"cedulaUsuario\" value=\"\" placeholder=\"cedula\" required>\n"
-//                        + "            <br>\n"
-//                        + "            Correo: \n"
-//                        + "            <br>\n"
-//                        + "            <input type=\"email\" name=\"correoUsuario\" value=\"\" placeholder=\"email\" required>\n"
-//                        + "\n"
-//                        + "            <br>\n"
-//                        + "            <input type=\"submit\" value=\"Guardar\">\n"
-//                        + "        </form> \n");
-//            }
-            out.print("<form action=\"GestionarPersonasServlet\" method=\"post\" >");
+                out.println(" <form action=\"GestionarPersonasServlet\" method=\"post\">"
+                        + "            Primer nombre:<br>\n"
+                        + "            <input type=\"text\" name=\"nombreUsuario\" value=\"\" placeholder=\"nombre\" required>\n"
+                        + "            <br>\n"
+                        + "            Fecha de nacimiento:<br>\n"
+                        + "            <input type=\"date\" name=\"fechaNacimiento\" value=\"\" required>\n"
+                        + "            <br>\n"
+                        + "            Cedula: \n"
+                        + "            <br>\n"
+                        + "            <input type=\"text\" name=\"cedulaUsuario\" value=\"\" placeholder=\"cedula\" required>\n"
+                        + "            <br>\n"
+                        + "            Correo: \n"
+                        + "            <br>\n"
+                        + "            <input type=\"email\" name=\"correoUsuario\" value=\"\" placeholder=\"email\" required>\n"
+                        + "\n"
+                        + "            <br>\n"
+                        + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"guardar\">\n"
+                        + "        </form> \n");
+
+            } else if ("editar".equals(accion)) {
+
+                out.println(" <form action=\"GestionarPersonasServlet\" method=\"post\">"
+                        + "            Primer nombre:<br>\n"
+                        + "            <input type=\"text\" name=\"nombreUsuario\" value=\"\" placeholder=\"nombre\" required>\n"
+                        + "            <br>\n"
+                        + "            Fecha de nacimiento:<br>\n"
+                        + "            <input type=\"date\" name=\"fechaNacimiento\" value=\"\" required>\n"
+                        + "            <br>\n"
+                        + "            Cedula: \n"
+                        + "            <br>\n"
+                        + "            <input type=\"text\" name=\"cedulaUsuario\" value=\"\" placeholder=\"cedula\" required>\n"
+                        + "            <br>\n"
+                        + "            Correo: \n"
+                        + "            <br>\n"
+                        + "            <input type=\"email\" name=\"correoUsuario\" value=\"\" placeholder=\"email\" required>\n"
+                        + "\n"
+                        + "            <br>\n"
+                        + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"actualizar\">\n"
+                        + "        </form> \n");
+                out.print("<form action=\"GestionarPersonasServlet\" method=\"post\" >");
 //            out.print("<select name=\"id\">");
 //
 //            usuarios.forEach((llave) -> {
 //                out.print("<option value=\"" + llave.getIdusuario() + "\">" + llave.getNombreusuario() + "</option>");
 //            });
 //            out.print("</select>");
-            out.print("<br>");
-            out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"eliminar\">");
-            out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"consultar\">");
-            out.print("</br>");
-//            out.print("<input type=\"submit\" value=\"Ejecutar\">");
+                out.print("<br>");
+                out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"consultar\">");
+                out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"insertar\">");
+                out.print("</br>");
 
-            out.print("</form>");
+                out.print("</form>");
 
-            if (usuariosCon.size() > 0) {
+                if (usuariosCon.size() > 0) {
 
-                out.print("<h1> " + usuariosCon.get(0).getCedulausuario() + "<h1>");
+                    out.print("<h1> " + usuariosCon.get(0).getCedulausuario() + "<h1>");
+
+                }
+                out.print("</div>");
+                out.println(
+                        "    </body>\n"
+                        + "</html>\n"
+                        + "");
 
             }
-            out.print("</div>");
-            out.println(
-                    "    </body>\n"
-                    + "</html>\n"
-                    + "");
-
         }
     }
 
@@ -175,13 +198,33 @@ public class GestionarPersonasServlet extends HttpServlet {
         accion = request.getParameter("ejecutar");
 
         if (accion != null) {
-
+            request.getParameter("selected");
             switch (accion) {
                 case "eliminar":
-                    
+                    Usuarios usuarioEliminar = new Usuarios();
+                    usuarioEliminar.setIdusuario(Integer.parseInt(request.getParameter("selected")));
+                    usuariosFacade.remove(usuarioEliminar);
+                    accion = "consultar";
                     break;
                 case "consultar":
                     usuarios = usuariosFacade.findAll();
+                    break;
+                case "guardar":
+                    Usuarios usuario = new Usuarios();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+                    try {
+                        usuario.setNombreusuario(request.getParameter("nombreUsuario"));
+                        usuario.setFechanacimiento(formatter.parse(request.getParameter("fechaNacimiento")));
+                        usuario.setCedulausuario(request.getParameter("cedulaUsuario"));
+                        usuario.setCorreousuario(request.getParameter("correoUsuario"));
+                        usuario.setIdusuario(usuariosFacade.count() + 1);
+                    } catch (ParseException ex) {
+                        Logger.getLogger(GestionarPersonasServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    usuariosFacade.create(usuario);
+                    accion = "consultar";
                     break;
                 default:
                     break;
