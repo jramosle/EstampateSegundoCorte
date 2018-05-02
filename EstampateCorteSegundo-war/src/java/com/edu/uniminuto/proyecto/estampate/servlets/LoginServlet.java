@@ -84,7 +84,7 @@ public class LoginServlet extends HttpServlet {
             
             if (usuarioRols.size() > 0 ) {
                 
-                switch (usuarioRols.get(0).getIdusuariorol()) {
+                switch (usuarioRols.get(0).getIdrol().getIdrol()) {
                     case 1:
                         requestDispatcher = request.getRequestDispatcher(REQUEST_DISPATCHER_TO_ADMIN);
                         requestDispatcher.forward(request, response);

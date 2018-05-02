@@ -101,7 +101,6 @@ public class GestionarPersonasServlet extends HttpServlet {
                         + "            Correo: \n"
                         + "            <br>\n"
                         + "            <input type=\"email\" name=\"correoUsuario\" value=\"\" placeholder=\"email\" required>\n"
-                        + "\n"
                         + "            <br>\n"
                         + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"guardar\">\n"
                         + "        </form>");
@@ -122,7 +121,6 @@ public class GestionarPersonasServlet extends HttpServlet {
                         + "            Correo: \n"
                         + "            <br>\n"
                         + "            <input type=\"email\" name=\"correoUsuario\" value="+usuarioEdit.getCorreousuario()+" placeholder=\"email\" required>\n"
-                        + "\n"
                         + "            <br>\n"
                         + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"actualizar\">\n"
                         + "        </form>");
