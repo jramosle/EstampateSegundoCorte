@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Usuarios implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @Basic(optional = false)
     @NotNull
@@ -63,7 +64,7 @@ public class Usuarios implements Serializable {
     private List<Preorden> preordenList;
     @OneToMany(mappedBy = "idusuario")
     private List<UsuarioRol> usuarioRolList;
-
+   
     public Usuarios() {
     }
 

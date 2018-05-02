@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -29,7 +30,8 @@ public class GestionarPersonasServlet extends HttpServlet {
     private UsuariosFacadeLocal usuariosFacade;
 
     List<Usuarios> usuarios = new ArrayList<>();
-    List<Usuarios> usuariosCon = new ArrayList<>();
+    Usuarios usuarioEdit = new Usuarios();
+//    List<Usuarios> usuariosCon = new ArrayList<>();
 
     String id = "";
     String accion = "";
@@ -107,29 +109,31 @@ public class GestionarPersonasServlet extends HttpServlet {
 
                 out.println(" <form action=\"GestionarPersonasServlet\" method=\"post\">"
                         + "            Primer nombre:<br>\n"
-                        + "            <input type=\"text\" name=\"nombreUsuario\" value=\"\" placeholder=\"nombre\" required>\n"
+                        + "            <input type=\"text\" name=\"nombreUsuario\" value="+usuarioEdit.getNombreusuario()+" placeholder=\"nombre\" required>\n"
                         + "            <br>\n"
                         + "            Fecha de nacimiento:<br>\n"
-                        + "            <input type=\"date\" name=\"fechaNacimiento\" value=\"\" required>\n"
+                        + "            <input type=\"date\" name=\"fechaNacimiento\" value="+usuarioEdit.getFechanacimiento()+" required>\n"
                         + "            <br>\n"
                         + "            Cedula: \n"
                         + "            <br>\n"
-                        + "            <input type=\"text\" name=\"cedulaUsuario\" value=\"\" placeholder=\"cedula\" required>\n"
+                        + "            <input type=\"text\" name=\"cedulaUsuario\" value="+usuarioEdit.getCedulausuario()+" placeholder=\"cedula\" required>\n"
                         + "            <br>\n"
                         + "            Correo: \n"
                         + "            <br>\n"
-                        + "            <input type=\"email\" name=\"correoUsuario\" value=\"\" placeholder=\"email\" required>\n"
+                        + "            <input type=\"email\" name=\"correoUsuario\" value="+usuarioEdit.getCorreousuario()+" placeholder=\"email\" required>\n"
                         + "\n"
                         + "            <br>\n"
                         + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"actualizar\">\n"
                         + "        </form> \n");
-                out.print("<form action=\"GestionarPersonasServlet\" method=\"post\" >");
+                
 //            out.print("<select name=\"id\">");
 //
 //            usuarios.forEach((llave) -> {
 //                out.print("<option value=\"" + llave.getIdusuario() + "\">" + llave.getNombreusuario() + "</option>");
 //            });
 //            out.print("</select>");
+            }
+                out.print("<form action=\"GestionarPersonasServlet\" method=\"post\" >");
                 out.print("<br>");
                 out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"consultar\">");
                 out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"insertar\">");
@@ -137,18 +141,17 @@ public class GestionarPersonasServlet extends HttpServlet {
 
                 out.print("</form>");
 
-                if (usuariosCon.size() > 0) {
-
-                    out.print("<h1> " + usuariosCon.get(0).getCedulausuario() + "<h1>");
-
-                }
+//                if (usuariosCon.size() > 0) {
+//
+//                    out.print("<h1> " + usuariosCon.get(0).getCedulausuario() + "<h1>");
+//
+//                }
                 out.print("</div>");
                 out.println(
                         "    </body>\n"
                         + "</html>\n"
                         + "");
 
-            }
         }
     }
 
@@ -194,37 +197,62 @@ public class GestionarPersonasServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         id = request.getParameter("id");
         accion = request.getParameter("ejecutar");
 
+        Usuarios usuario;
+        
         if (accion != null) {
             request.getParameter("selected");
             switch (accion) {
                 case "eliminar":
-                    Usuarios usuarioEliminar = new Usuarios();
-                    usuarioEliminar.setIdusuario(Integer.parseInt(request.getParameter("selected")));
-                    usuariosFacade.remove(usuarioEliminar);
-                    accion = "consultar";
+                    usuario = new Usuarios();   
+                    usuario.setIdusuario(Integer.parseInt(request.getParameter("selected")));
+                    usuariosFacade.remove(usuario);
                     break;
                 case "consultar":
                     usuarios = usuariosFacade.findAll();
                     break;
                 case "guardar":
-                    Usuarios usuario = new Usuarios();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
+                    usuario = new Usuarios();
+                    
                     try {
                         usuario.setNombreusuario(request.getParameter("nombreUsuario"));
                         usuario.setFechanacimiento(formatter.parse(request.getParameter("fechaNacimiento")));
                         usuario.setCedulausuario(request.getParameter("cedulaUsuario"));
                         usuario.setCorreousuario(request.getParameter("correoUsuario"));
-                        usuario.setIdusuario(usuariosFacade.count() + 1);
+                        Integer max = usuarios
+                            .stream()
+                            .mapToInt(v -> v.getIdusuario())
+                            .max().orElseThrow(NoSuchElementException::new);
+                        usuario.setIdusuario(max + 1);
                     } catch (ParseException ex) {
                         Logger.getLogger(GestionarPersonasServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
                     usuariosFacade.create(usuario);
-                    accion = "consultar";
+                    
+                    break;
+                    
+                case "editar":
+                    
+                    usuarioEdit = usuariosFacade.find(Integer.parseInt(request.getParameter("selected")));
+                    
+                    break;
+                    
+                case "actualizar":
+                    
+                    try {
+                        
+                        usuarioEdit.setNombreusuario(request.getParameter("nombreUsuario"));
+                        usuarioEdit.setFechanacimiento(formatter.parse(request.getParameter("fechaNacimiento")));
+                        usuarioEdit.setCedulausuario(request.getParameter("cedulaUsuario"));
+                        usuarioEdit.setCorreousuario(request.getParameter("correoUsuario"));
+                        usuariosFacade.edit(usuarioEdit);
+                        
+                    } catch (ParseException ex) {
+                        Logger.getLogger(GestionarPersonasServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     break;
                 default:
                     break;
