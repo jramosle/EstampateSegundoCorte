@@ -1,5 +1,6 @@
 package com.edu.uniminuto.proyecto.estampate.servlets;
 
+import static com.edu.uniminuto.proyecto.estampate.servlets.LoginServlet.REQUEST_DISPATCHER_TO_ADMIN;
 import com.unimininuto.estampate.ejb.interfaces.UsuariosFacadeLocal;
 import com.unimininuto.estampate.entities.Usuarios;
 import java.io.IOException;
@@ -31,10 +32,10 @@ public class GestionarPersonasServlet extends HttpServlet {
 
     List<Usuarios> usuarios = new ArrayList<>();
     Usuarios usuarioEdit = new Usuarios();
-//    List<Usuarios> usuariosCon = new ArrayList<>();
-
     String id = "";
     String accion = "";
+    
+    public static final String REQUEST_DISPATCHER_TO_ARTISTA = "menuArtista.html";
 
     /**
      *
@@ -83,7 +84,7 @@ public class GestionarPersonasServlet extends HttpServlet {
                 out.print("</table>"
                         + "<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"eliminar\">"
                         + "<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"editar\">"
-                        + "</form> \n");
+                        + "</form>");
             } else if ("insertar".equals(accion)) {
 
                 out.println(" <form action=\"GestionarPersonasServlet\" method=\"post\">"
@@ -103,7 +104,7 @@ public class GestionarPersonasServlet extends HttpServlet {
                         + "\n"
                         + "            <br>\n"
                         + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"guardar\">\n"
-                        + "        </form> \n");
+                        + "        </form>");
 
             } else if ("editar".equals(accion)) {
 
@@ -124,7 +125,7 @@ public class GestionarPersonasServlet extends HttpServlet {
                         + "\n"
                         + "            <br>\n"
                         + "            <input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"actualizar\">\n"
-                        + "        </form> \n");
+                        + "        </form>");
                 
 //            out.print("<select name=\"id\">");
 //
@@ -137,6 +138,7 @@ public class GestionarPersonasServlet extends HttpServlet {
                 out.print("<br>");
                 out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"consultar\">");
                 out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"insertar\">");
+                out.print("<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"cancelar\">");
                 out.print("</br>");
 
                 out.print("</form>");
@@ -197,6 +199,7 @@ public class GestionarPersonasServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        RequestDispatcher requestDispatcher;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         id = request.getParameter("id");
         accion = request.getParameter("ejecutar");
@@ -253,6 +256,11 @@ public class GestionarPersonasServlet extends HttpServlet {
                     } catch (ParseException ex) {
                         Logger.getLogger(GestionarPersonasServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    break;
+                    
+                case "cancelar":
+                    requestDispatcher = request.getRequestDispatcher(REQUEST_DISPATCHER_TO_ADMIN);
+                    requestDispatcher.forward(request, response);
                     break;
                 default:
                     break;

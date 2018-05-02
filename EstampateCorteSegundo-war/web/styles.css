@@ -56,9 +56,13 @@ select{
     padding: 1em;
     border-radius:9px;
 }
+body {  
+        background-image:url('spmUM.gif');
+ }
 input[type=submit]{
     padding: 1em;
     background: #0080ff;
+    width: 170px;
     border: none;
     color: white;
     font-family: arial;
