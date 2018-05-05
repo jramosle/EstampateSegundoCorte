@@ -202,7 +202,6 @@ public class RegistroDeDatosPersonalesServlet extends HttpServlet {
             throws ServletException, IOException {
 
         RequestDispatcher requestDispatcher;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         id = request.getParameter("id");
         accion = request.getParameter("ejecutar");
 
