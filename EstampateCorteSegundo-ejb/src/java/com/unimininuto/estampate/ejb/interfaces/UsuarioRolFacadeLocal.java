@@ -29,7 +29,7 @@ public interface UsuarioRolFacadeLocal {
     List<UsuarioRol> findRange(int[] range);
 
     int count();
-    
+   
     List<UsuarioRol> validateUserLogin(String usuarioAValidar, String passwordAValidar);
     
 }
