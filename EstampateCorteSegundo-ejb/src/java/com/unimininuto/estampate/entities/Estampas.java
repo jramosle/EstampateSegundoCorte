@@ -63,6 +63,8 @@ public class Estampas implements Serializable {
     @JoinColumn(name = "idtema", referencedColumnName = "idtemas")
     @ManyToOne
     private Temas idtema;
+    @Column(name = "precio")
+    private String precio; 
 
     public Estampas() {
     }
@@ -136,6 +138,16 @@ public class Estampas implements Serializable {
         this.idtema = idtema;
     }
 
+    public String getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(String precio) {
+        this.precio = precio;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 0;
