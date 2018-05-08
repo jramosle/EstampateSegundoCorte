@@ -20,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -68,7 +69,7 @@ public class LoginServlet extends HttpServlet {
         
         try (PrintWriter out = response.getWriter()) {
             
-            
+            HttpSession sesion = request.getSession();
             List<UsuarioRol> usuarioRols = new ArrayList<>();
             
             String usuarioAValidar = request.getParameter(USER_PARAMETER);
@@ -78,6 +79,8 @@ public class LoginServlet extends HttpServlet {
             try {
             
                usuarioRols = usuarioRolFacade.validateUserLogin(usuarioAValidar, passwordAValidar);
+               sesion.setAttribute("usuario", usuarioAValidar);
+               
             } catch (Exception ex) {
                 Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             }

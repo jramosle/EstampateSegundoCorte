@@ -95,19 +95,24 @@ public class GestionarEstampasServlet extends HttpServlet {
                         + "    <th>Nombre Estampa</th>\n"
                         + "    <th>Artista</th>\n"
                         + "    <th>Tema</th>\n"
+                        + "    <th>Precio</th>\n"
                         + "    <th>Imagen</th>\n"
                         + "  </tr>\n");
 
                 estampasList.forEach((estampas) -> {
 
-                    String urlEstampa = estampas.getUrl().replace('\\', '/');
-                    out.print("  <tr>\n"
-                            + "    <td><input type=\"radio\" name=\"selected\" value=" + estampas.getIdestampas() + "></td>\n"
-                            + "    <td>" + estampas.getNombreestampa() + "</td>\n"
-                            + "    <td>" + estampas.getIdartista().getIdusuario().getNombreusuario() + "</td>\n"
-                            + "    <td>" + estampas.getIdtema().getNombretema() + "</td>\n"
-                            + "    <td><img width=\"200\" src=\"" + urlEstampa + "\"/></td>\n"
-                            + "  </tr>\n");
+                    if (estampas.getIdartista().getUsername().equals(request.getSession().getAttribute("usuario"))) {
+
+                        String urlEstampa = estampas.getUrl().replace('\\', '/');
+                        out.print("  <tr>\n"
+                                + "    <td><input type=\"radio\" name=\"selected\" value=" + estampas.getIdestampas() + "></td>\n"
+                                + "    <td>" + estampas.getNombreestampa() + "</td>\n"
+                                + "    <td>" + estampas.getIdartista().getIdusuario().getNombreusuario() + "</td>\n"
+                                + "    <td>" + estampas.getIdtema().getNombretema() + "</td>\n"
+                                + "    <td>" + estampas.getPrecio() + "</td>\n"
+                                + "    <td><img width=\"200\" src=\"" + urlEstampa + "\"/></td>\n"
+                                + "  </tr>\n");
+                    }
                 });
                 out.print("</table>"
                         + "<input style='left:0;' type=\"submit\" name=\"ejecutar\" value=\"eliminar\">"
@@ -128,10 +133,15 @@ public class GestionarEstampasServlet extends HttpServlet {
                 out.print("</select><br>");
                 out.print("<select name=\"selectUsuarios\">");
                 usuarioRolFacade.findAll().forEach((llave) -> {
-                    out.print("<option value=\"" + llave.getIdusuariorol() + "\">" + llave.getIdusuario().getNombreusuario() + "</option>");
+                    if (llave.getUsername().equals(request.getSession().getAttribute("usuario"))) {
+                        out.print("<option value=\"" + llave.getIdusuariorol() + "\">" + llave.getIdusuario().getNombreusuario() + "</option>");
+                    }
                 });
                 out.print("</select><br>");
+                
                 out.println("<br>\n"
+                        + "            <input type=\"number\" name=\"precio\" value=\"\" placeholder=\"precio\" required>\n"
+                        + "<br>\n"
                         + "            <legend>Imagen estampa</legend>\n"
                         + "                <input type=\"file\" name=\"file\" class=\"form-control\" id=\"\" placeholder=\"Input field\" required>\n"
                         + "            <div class=\"form-group\">\n"
@@ -150,7 +160,7 @@ public class GestionarEstampasServlet extends HttpServlet {
                 temasFacadeLocal.findAll().forEach((llave) -> {
                     out.print("<option value=\"" + llave.getIdtemas() + "\">" + llave.getNombretema() + " " + llave.getDescripciontema() + "</option>");
                 });
-                out.println("<br>\n"
+                out.println("<input type=\"number\" name=\"precio\" value=\"" +estampasEdit.getPrecio() + "\" placeholder=\"precio\" required>\n"
                         + "            <legend>Imagen estampa</legend>\n"
                         + "                <input type=\"file\" name=\"file\" class=\"form-control\" id=\"\" placeholder=\"Input field\" required>\n"
                         + "            <div class=\"form-group\">\n"
@@ -219,6 +229,8 @@ public class GestionarEstampasServlet extends HttpServlet {
 
         Estampas estampas;
 
+        request.getSession().getAttribute("usuario");
+
         if (accion != null) {
             request.getParameter("selected");
             switch (accion) {
@@ -271,6 +283,7 @@ public class GestionarEstampasServlet extends HttpServlet {
                         IOUtils.closeQuietly(outStream);
                     }
                     estampas.setUrl("http://localhost:8040/uploads/" + nombreArchivo);
+                    estampas.setPrecio(request.getParameter("precio"));
 
                     estampasFacadeLocal.create(estampas);
 
@@ -311,6 +324,7 @@ public class GestionarEstampasServlet extends HttpServlet {
                         estampasEdit.setIdtema(temaEdit);
                         estampasEdit.setNombreestampa(request.getParameter("nombreEstampa"));
                         estampasEdit.setUrl("http://localhost:8040/uploads/" + nombreArchivoEdit);
+                        estampasEdit.setPrecio(request.getParameter("precio"));
 
                         estampasFacadeLocal.edit(estampasEdit);
 
